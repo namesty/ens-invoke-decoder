@@ -2,180 +2,49 @@ pub mod wrap;
 pub use wrap::*;
 
 impl ModuleTrait for Module {
-    fn get_resolver(args: ArgsGetResolver) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get resolver address for {domain}")))
-    }
-
-    fn get_owner(args: ArgsGetOwner) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get owner of {domain}")))
-    }
-
-    fn check_if_record_exists(args: ArgsCheckIfRecordExists) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Check if {domain} exists")))
-    }
-
-    fn get_address(args: ArgsGetAddress) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get address of {domain} owner")))
-    }
-
-    fn get_address_from_domain(args: ArgsGetAddressFromDomain) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get address of {domain} owner")))
-    }
-
-    fn get_content_hash(args: ArgsGetContentHash) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get {domain}'s content hash")))
-    }
-
-    fn get_content_hash_from_domain(args: ArgsGetContentHashFromDomain) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get {domain}'s content hash")))
-    }
-
-    fn get_expiry_times(args: ArgsGetExpiryTimes) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        Ok(Some(format!("Get expiry time for {domain}")))
-    }
-
-    fn get_reverse_resolver(args: ArgsGetReverseResolver) -> Result<Option<String>, String> {
-        let address = args.address;
-        Ok(Some(format!("Get reverse resolver address for {address}")))
-    }
-
-    fn get_name_from_reverse_resolver(args: ArgsGetNameFromReverseResolver) -> Result<Option<String>, String> {
-        let address = args.address;
-        Ok(Some(format!("Get ENS domain registered to {address}")))
-    }
-
-    fn get_name_from_address(args: ArgsGetNameFromAddress) -> Result<Option<String>, String> {
-        let address = args.address;
-        Ok(Some(format!("Get ENS domain registered to {address}")))
-    }
-
-    fn get_text_record(args: ArgsGetTextRecord) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let key = args.key;
-        Ok(Some(format!("Get value of '{key}' in {domain}")))
-    }
-
-    fn set_resolver(args: ArgsSetResolver) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let resolver = args.resolver_address;
-        Ok(Some(format!("Set {domain}'s resolver to '{resolver}'")))
-    }
-
-    fn register_domain(args: ArgsRegisterDomain) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let registrar = args.registrar_address;
-        let owner = args.owner;
-        Ok(Some(format!("Register {domain} with registrar '{registrar}' for address '{owner}'")))
-    }
-
-    fn reverse_register_domain(args: ArgsReverseRegisterDomain) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
-
-    fn set_name(args: ArgsSetName) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
-
-    fn set_address(args: ArgsSetAddress) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let address = args.address;
-        Ok(Some(format!("Set {domain}'s address to {address}")))
-    }
-
-    fn set_owner(args: ArgsSetOwner) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let owner = args.new_owner;
-        Ok(Some(format!("Set {domain}'s owner to '{owner}'")))
-    }
-
-    fn set_subdomain_owner(args: ArgsSetSubdomainOwner) -> Result<Option<String>, String> {
-        let subdomain = args.subdomain;
-        let owner = args.owner;
-        Ok(Some(format!("Set {subdomain}'s owner to '{owner}'")))
-    }
-
-    fn set_record(args: ArgsSetRecord) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let resolver = args.resolver_address;
-        let ttl = args.ttl;
-        Ok(Some(format!("Register {domain} with resolver '{resolver}' and TTL {ttl}")))
-    }
-
-    fn set_subdomain_record(args: ArgsSetSubdomainRecord) -> Result<Option<String>, String> {
-        let label = args.label;
-        let domain = args.domain;
-        let resolver = args.resolver_address;
-        let ttl = args.ttl;
-        Ok(Some(format!("Register subdomain {label}.{domain} with resolver '{resolver}' and TTL {ttl}")))
-    }
-
-    fn register_subdomains_recursively(args: ArgsRegisterSubdomainsRecursively) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let resolver = args.resolver_address;
-        let ttl = args.ttl;
-        Ok(Some(format!("Recursively register {domain} subdomain with resolver '{resolver}' and TTL {ttl}")))
-    }
-
     fn register_domain_and_subdomains_recursively(args: ArgsRegisterDomainAndSubdomainsRecursively) -> Result<Option<String>, String> {
         let domain = args.domain;
         let resolver = args.resolver_address;
         let ttl = args.ttl;
         Ok(Some(format!("Recursively register {domain} domain with resolver '{resolver}' and TTL {ttl}")))
     }
+}
 
-    fn set_content_hash(args: ArgsSetContentHash) -> Result<Option<String>, String> {
-        let domain = args.domain;
-        let content = args.cid;
-        Ok(Some(format!("Set {domain}'s content hash to '{content}'")))
-    }
+#[cfg(test)]
+mod tests {
+  use std::{fs, path::PathBuf, sync::Arc};
 
-    fn set_address_from_domain(args: ArgsSetAddressFromDomain) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+use polywrap_client::{builder::{PolywrapClientConfig, PolywrapClientConfigBuilder}, core::{uri::Uri, file_reader::SimpleFileReader, invoker::Invoker}, wasm::wasm_wrapper::WasmWrapper, client::PolywrapClient};
 
-    fn set_content_hash_from_domain(args: ArgsSetContentHashFromDomain) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+use crate::ArgsRegisterDomainAndSubdomainsRecursively;
 
-    fn deploy_f_i_f_s_registrar(args: ArgsDeployFIFSRegistrar) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+  #[test]
+    fn it_works() {
+      let bytes = fs::read(PathBuf::from("./build/wrap.wasm")).unwrap();
+      let wrapper_uri = Uri::try_from("embed/test").unwrap();
 
-    fn register_subnode_owner_with_f_i_f_s_registrar(args: ArgsRegisterSubnodeOwnerWithFIFSRegistrar) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+      let mut config = PolywrapClientConfig::new();
+      
+      config.add_wrapper(wrapper_uri.clone(), Arc::new(
+        WasmWrapper::try_from_bytecode(&bytes, Arc::new(SimpleFileReader::new())).unwrap()
+      ));
 
-    fn set_text_record(args: ArgsSetTextRecord) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+      let client = PolywrapClient::new(config.into());
 
-    fn configure_open_domain(args: ArgsConfigureOpenDomain) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
+      let result = client.invoke_raw(&wrapper_uri,
+        "registerDomainAndSubdomainsRecursively",
+        Some(&polywrap_client::msgpack::to_vec(&ArgsRegisterDomainAndSubdomainsRecursively {
+          domain: "foo".to_string(),
+          owner: "foo".to_string(),
+          resolver_address: "foo".to_string(),
+          ttl: "foo".to_string(),
+          registrar_address: "foo".to_string(),
+          registry_address: "foo".to_string(),
+        }).unwrap()),
+        None,
+        None
+      ).unwrap();
 
-    fn create_subdomain_in_open_domain(args: ArgsCreateSubdomainInOpenDomain) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
-    }
-
-    fn create_subdomain_in_open_domain_and_set_content_hash(args: ArgsCreateSubdomainInOpenDomainAndSetContentHash) -> Result<Option<String>, String> {
-        // TODO
-        Ok(None)
+      println!("{:?}", result)
     }
 }
